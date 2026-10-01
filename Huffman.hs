@@ -1,7 +1,7 @@
-module Hoffman(
-    Hoffman(..),
-    nuevoHoffman,
-    fusionHoffman,
+module Huffman(
+    Huffman(..),
+    nuevoHuffman,
+    fusionHuffman,
     obtenerCaracter,
     arbolIzquierdo,
     arbolDerecho,
@@ -11,35 +11,35 @@ module Hoffman(
 import qualified Data.Map as Map
 import Data.Map (Map)
 
--- Creamos el tipo de dato Hoffman
--- Donde puede ser una Hoja o una Rama con dos Hoffmans
-data Hoffman =  Hoja Char  | Rama Hoffman Hoffman
+-- Creamos el tipo de dato Huffman
+-- Donde puede ser una Hoja o una Rama con dos Huffmans
+data Huffman =  Hoja Char  | Rama Huffman Huffman
 
--- Instancia de Show para Hoffman  
--- Convierte de Hoffman a String  
-instance Show Hoffman where
-    show :: Hoffman -> String
+-- Instancia de Show para Huffman  
+-- Convierte de Huffman a String  
+instance Show Huffman where
+    show :: Huffman -> String
     show (Hoja c) = "<>" ++ show c
     show (Rama a b) = "=>(" ++ show a ++ " " ++ show b ++")"
 
--- Instancia de Read para Hoffman
--- Convierte de String a Hoffman, es necesario indicar el tipo durante su ejecucion
-instance Read Hoffman where
-    readsPrec _ str = parseHoffman (dropWhile (== ' ') str)
+-- Instancia de Read para Huffman
+-- Convierte de String a Huffman, es necesario indicar el tipo durante su ejecucion
+instance Read Huffman where
+    readsPrec _ str = parseHuffman (dropWhile (== ' ') str)
 
 -- Función auxiliar que nos permitira recorrer 
 -- el string elemento por elemento.
 -- Ademas ira diferenciando los paréntesis
 
-parseHoffman :: String -> [(Hoffman , String)]
-parseHoffman str =
+parseHuffman :: String -> [(Huffman , String)]
+parseHuffman str =
     case dropWhile (== ' ') str of
         -- Si encuentra un '('
         ('(':resto) ->
-            parseHoffman $ dropWhile (== ' ') resto
+            parseHuffman $ dropWhile (== ' ') resto
         -- Si encuentra un ')'
         (')':resto) ->
-            parseHoffman $ dropWhile (== ' ') resto
+            parseHuffman $ dropWhile (== ' ') resto
         -- Si encuentra una Hoja
         ('H':'o':'j':'a':resto) ->
             [(Hoja x, resto') | 
@@ -48,8 +48,8 @@ parseHoffman str =
         -- Si encuentra una Rama
         ('R':'a':'m':'a':resto) ->
             [(Rama izq der, resto'') |
-                (izq, resto1) <- parseHoffman resto,
-                (der, resto2) <- parseHoffman resto1,
+                (izq, resto1) <- parseHuffman resto,
+                (der, resto2) <- parseHuffman resto1,
                 (')':resto'') <- [dropWhile (== ' ') resto2]
             ]
         -- Si encuentra una Hoja pero version Show
@@ -58,41 +58,41 @@ parseHoffman str =
         -- Si encuentra una Rama pero version Show
         ('=':'>':'(':resto) ->
             [(Rama izq der, resto'') |
-                (izq, resto1) <- parseHoffman resto,
-                (der, resto2) <- parseHoffman resto1,
+                (izq, resto1) <- parseHuffman resto,
+                (der, resto2) <- parseHuffman resto1,
                 (')':resto'') <- [dropWhile (== ' ') resto2]
             ]
         _ -> [] -- Si no reconoce la entrada, retorna vacio
 
--- Función que recibe un caracter y devuelve un arbol de Hoffman 
+-- Función que recibe un caracter y devuelve un arbol de Huffman 
 -- con una unica hoja con el caracter
-nuevoHoffman :: Char -> Hoffman 
-nuevoHoffman = Hoja 
+nuevoHuffman :: Char -> Huffman 
+nuevoHuffman = Hoja 
 
--- Función que fusiona dos arboles de Hoffman, ya sean hojas o ramas
-fusionHoffman :: Hoffman -> Hoffman -> Hoffman
-fusionHoffman = Rama
+-- Función que fusiona dos arboles de Huffman, ya sean hojas o ramas
+fusionHuffman :: Huffman -> Huffman -> Huffman
+fusionHuffman = Rama
 
--- Función que recibe un arbol de Hoffman y devuelve el caracter de la hoja
+-- Función que recibe un arbol de Huffman y devuelve el caracter de la hoja
 -- Si se recibe una rama, se lanza un error
-obtenerCaracter :: Hoffman -> Char
+obtenerCaracter :: Huffman -> Char
 obtenerCaracter (Hoja c) = c
 obtenerCaracter (Rama _ _) = error "No se puede obtener caracter de una rama"
 
--- Función que recibe un arbol de Hoffman y devuelve el arbol izquierdo
+-- Función que recibe un arbol de Huffman y devuelve el arbol izquierdo
 -- Si se recibe una hoja, se lanza un error
-arbolIzquierdo :: Hoffman -> Hoffman
+arbolIzquierdo :: Huffman -> Huffman
 arbolIzquierdo (Rama a _) = a
 arbolIzquierdo (Hoja _) = error "No se puede obtener arbol izquierdo de una hoja"
 
--- Función que recibe un arbol de Hoffman y devuelve el arbol derecho
+-- Función que recibe un arbol de Huffman y devuelve el arbol derecho
 -- Si se recibe una hoja, se lanza un error
-arbolDerecho :: Hoffman -> Hoffman 
+arbolDerecho :: Huffman -> Huffman 
 arbolDerecho (Rama _ b) = b
 arbolDerecho (Hoja _)  = error "No se puede obtener arbol derecho de una hoja"
 
--- Función que recibe un arbol de Hoffman y devuelve un Map con la codificación de cada caracter
-codificacion :: Hoffman -> Map Char String
+-- Función que recibe un arbol de Huffman y devuelve un Map con la codificación de cada caracter
+codificacion :: Huffman -> Map Char String
 -- Si se recibe una hoja, se devuelve un Map con el caracter y su codificación, es decir, [caracter, ""]
 codificacion (Hoja c) = Map.singleton c ""
 

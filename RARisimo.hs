@@ -1,19 +1,19 @@
 module RARisimo (
     frecuencias,
     ganadores,
-    hoffman,
+    huffman,
     rarisimo
 ) where 
 
 import Frecuencia 
-import Hoffman
+import Huffman
 import qualified Data.Map as Map
 import Data.Map (Map)
 import Data.Maybe (fromJust, isJust)
 -- Dada una cadena de caracteres, devuelve una lista de Frecuencia con 
 -- la cantidad de ocurrencias de cada caracter presente en la cadena
--- El valor asociado a la fecuencia es una hoja de tipo Hoffman del caracter
-frecuencias :: String -> [Frecuencia Hoffman]
+-- El valor asociado a la fecuencia es una hoja de tipo Huffman del caracter
+frecuencias :: String -> [Frecuencia Huffman]
 frecuencias s = aux_frecuencias s (letras_diferentes s [])
 
 -- Funciones auxiliares para la funcion frecuencias 
@@ -29,8 +29,8 @@ letras_diferentes (x: xs) d
 -- Dadas dos listas de caracteres l1 l2, devuelve una lista
 -- de Frecuencia con la cantidad de ocurrencias de cada caracter de l2
 -- en l1
--- El valor asociado a la fecuencia es una hoja de tipo Hoffman del caracter
-aux_frecuencias :: [Char] -> [Char] -> [Frecuencia Hoffman]
+-- El valor asociado a la fecuencia es una hoja de tipo Huffman del caracter
+aux_frecuencias :: [Char] -> [Char] -> [Frecuencia Huffman]
 aux_frecuencias l1 l2 = [ fh | x <- l2, 
                                fc <- [contar x l1],
                                fh <- [Frecuencia ((Hoja x), (frecuencia fc))]
@@ -58,34 +58,34 @@ qsort (x:xs) = qsort [y | y <- xs, y < x] ++ [x] ++ qsort [y | y <- xs, y >= x]
 --------
 
 -- Dada una cadena de caracteres no vacıa, construye su representacion
--- como arbol de Hoffman
--- Si se aplica hoffman sobre una cadena de caracteres vacıa, devuelve Nothing.
-hoffman :: String -> Maybe Hoffman
-hoffman "" = Nothing
-hoffman s = aux_hoffman (frecuencias s)
+-- como arbol de Huffman
+-- Si se aplica huffman sobre una cadena de caracteres vacıa, devuelve Nothing.
+huffman :: String -> Maybe Huffman
+huffman "" = Nothing
+huffman s = aux_huffman (frecuencias s)
 
--- Funcion auxiliar para hoffman 
-aux_hoffman :: [Frecuencia Hoffman] -> Maybe Hoffman
-aux_hoffman [f] = Just $ valor f
-aux_hoffman bosque = 
+-- Funcion auxiliar para huffman 
+aux_huffman :: [Frecuencia Huffman] -> Maybe Huffman
+aux_huffman [f] = Just $ valor f
+aux_huffman bosque = 
     case ganadores bosque of
     Just (min1, min2, resto_del_bosque) -> 
         let 
-            nuevoArbol = fusionHoffman (valor min1) (valor min2)
+            nuevoArbol = fusionHuffman (valor min1) (valor min2)
             suma = (frecuencia min1) + (frecuencia min2)
             nuevaFrecuencia = Frecuencia (nuevoArbol, suma)
-        in aux_hoffman (nuevaFrecuencia:resto_del_bosque)
+        in aux_huffman (nuevaFrecuencia:resto_del_bosque)
 
     Nothing -> Nothing
 
 --------
 
--- Dada una cadena de caracteres, construye la “Codificacion de Hoffman”
+-- Dada una cadena de caracteres, construye la “Codificacion de Huffman”
 -- asociada a cada caracter, basado en el algoritmo propuesto para la 
--- funcion hoffman
+-- funcion huffman
 rarisimo :: String -> Map Char String
 rarisimo palabra = 
-    let maybeHoffman = hoffman palabra
-    in if isJust maybeHoffman
-       then codificacion (fromJust maybeHoffman)
+    let maybeHuffman = huffman palabra
+    in if isJust maybeHuffman
+       then codificacion (fromJust maybeHuffman)
        else Map.empty

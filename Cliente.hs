@@ -1,6 +1,6 @@
 module Cliente (main) where
     
-import RARisimo (rarisimo, hoffman)
+import RARisimo (rarisimo, huffman)
 import qualified Data.Map as Map
 import System.IO
 import System.Directory
@@ -11,7 +11,7 @@ import Data.Bits (shiftL, shiftR, (.|.))
 import Numeric (showIntAtBase)
 import Data.Char (intToDigit, chr, ord) 
 import Text.Read (readMaybe) 
-import Hoffman
+import Huffman
 
 -- Función principal
 main :: IO ()
@@ -50,7 +50,7 @@ analizar = do
     putStrLn content
     let contenido = content ++ "ë"
     --creamos el arbol
-    let maybeTree = hoffman contenido
+    let maybeTree = huffman contenido
     case maybeTree of
         --arbol vacio
         Nothing -> putStrLn "El archivo esta vacio, no se puede codificar."
@@ -85,7 +85,7 @@ codificar = do
     putStrLn content
     --creamos el arbol
     let contenido = content ++ "ë"
-    let maybeTree = hoffman contenido
+    let maybeTree = huffman contenido
     case maybeTree of
         --arbol vacio
         Nothing -> putStrLn "El archivo esta vacio, no se puede codificar."
@@ -123,11 +123,11 @@ decodificarArchivo = do
     let treeString = bitsToString treeBits
     --putStrLn treeString
     --descodificar
-    let tree = readMaybe treeString :: Maybe Hoffman
+    let tree = readMaybe treeString :: Maybe Huffman
     case tree of
-        Nothing -> putStrLn "Error al decodificar el arbol de Hoffman."
+        Nothing -> putStrLn "Error al decodificar el arbol de Huffman."
         Just t -> do
-            let decodedString = decodeHoffman t encodedBits
+            let decodedString = decodeHuffman t encodedBits
             putStrLn "Contenido decodificado:"
             putStrLn decodedString
 
@@ -177,9 +177,9 @@ chunksOf :: Int -> [a] -> [[a]]
 chunksOf _ [] = []
 chunksOf n xs = take n xs : chunksOf n (drop n xs)
 
---Funcion auxiliar para decodificar una cadena de bits usando un arbol de Hoffman
-decodeHoffman :: Hoffman -> String -> String
-decodeHoffman tree bits = decodeHelper tree bits tree
+--Funcion auxiliar para decodificar una cadena de bits usando un arbol de Huffman
+decodeHuffman :: Huffman -> String -> String
+decodeHuffman tree bits = decodeHelper tree bits tree
   where
     decodeHelper _ [] _ = []
     decodeHelper (Hoja c) bits' _ = c : decodeHelper tree bits' tree
